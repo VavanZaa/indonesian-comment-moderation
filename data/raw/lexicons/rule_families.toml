@@ -1,0 +1,93 @@
+# A2's regex families (docs/05-build-contract.md §2 / §3).
+#
+# Keys MUST exactly match `src/annotate/adapters.py::A2_HARM_FAMILIES` and
+# `src/annotate/a2_rules.py::FAMILY_PRIORITY`:
+#   insult, slur, sexual, threat, doxx, death_wish, selfharm_encouragement
+#
+# Consensus makes A2's coverage load-bearing for the HIGH tier (AGENTS.md §4, §2):
+# a blatantly harmful comment whose family A2 does not match can never reach HIGH.
+# So this file stays BROAD.
+#
+# Deliberately excluded, everywhere in this file: "jelek" and any other bare
+# evaluative-quality adjective ("buruk", "aneh", "gila", "norak", "jelek"...).
+# Those words carry the criticism/harassment boundary the whole demo rests on
+# (AGENTS.md TRAP 1) - "videonya jelek" is legitimate_criticism, and firing A2's HARM
+# signal on it would corrupt exactly the contrast demo scene 2 exists to show. Also
+# excluded: ethnic and religious epithets, and disability slurs - broad recall on
+# generic profanity and dehumanizing insults does not require naming those.
+
+[insult]
+# Generic personal insults - direct, low overlap with fair criticism of a work or an
+# action. `abusive_id.csv` covers the same ground with more spelling variants; this
+# family adds the multi-word idioms a single-word lexicon cannot express.
+patterns = [
+    "\\bgoblok\\b", "\\btolol\\b", "\\bbego\\b", "\\bbodoh\\b", "\\bdungu\\b",
+    "\\bidiot\\b", "\\bkoplak\\b", "\\boon\\b", "\\bbebal\\b", "\\bkampret\\b",
+    "\\bbangsat\\b", "\\bbrengsek\\b", "\\bsialan\\b", "\\bbajingan\\b",
+    "\\bkeparat\\b", "\\blaknat\\b", "\\bkurang ajar\\b", "\\bkurangajar\\b",
+    "\\bmuka tembok\\b", "\\botak udang\\b", "\\btidak tahu malu\\b",
+    "\\btak tahu malu\\b", "\\bpecundang\\b", "\\bcupu\\b", "\\bsongong\\b",
+    "\\bbelagu\\b", "\\bbacot\\b", "\\btai\\b", "\\btaik\\b", "\\bbahlul\\b",
+]
+
+[slur]
+# Dehumanizing (animal) insults and gender/orientation-directed pejoratives - the
+# identity-adjacent register, kept narrow on purpose (see the exclusion note above).
+patterns = [
+    "\\banjing\\b", "\\basu\\b", "\\bbabi\\b", "\\bmonyet\\b", "\\bkunyuk\\b",
+    "\\bkerbau\\b", "\\bkeledai\\b", "\\btikus\\b", "\\bkirik\\b", "\\bbanci\\b",
+    "\\bbencong\\b", "\\bhomo\\b",
+]
+
+[sexual]
+# Sexual harassment / vulgar sexual content directed at a person.
+patterns = [
+    "\\bkontol\\b", "\\bmemek\\b", "\\bpepek\\b", "\\bngentot\\b", "\\bcoli\\b",
+    "\\bcolmek\\b", "\\bjembut\\b", "\\bitil\\b", "\\bpeju\\b", "\\bcabul\\b",
+    "\\bmesum\\b", "\\bpelacur\\b", "\\blonte\\b", "\\bsundal\\b", "\\bperek\\b",
+    "\\bpecun\\b", "\\bjablay\\b", "\\bpelakor\\b", "\\bperkosa\\b",
+    "\\bperkosaan\\b", "\\bpelecehan seksual\\b", "\\bfoto bugil\\b",
+    "\\bvideo bugil\\b", "\\btelanjangin\\b",
+]
+
+[threat]
+# Direct first-person threats of violence.
+patterns = [
+    "\\bkubunuh\\b", "\\bku bunuh\\b", "\\bgue bunuh\\b", "\\bgw bunuh\\b",
+    "\\bkupukul\\b", "\\bku pukul\\b", "\\bakan kubunuh\\b", "\\bakan kupukul\\b",
+    "\\bbunuh kamu\\b", "\\bbunuh lu\\b", "\\bbunuh kau\\b", "\\bhabisi kau\\b",
+    "\\bhabisi lu\\b", "\\bculik kamu\\b", "\\bkulukai\\b", "\\bku lukai\\b",
+    "\\bawas lo\\b", "\\bawas kau\\b", "\\bawas kamu ya\\b",
+    "\\btunggu pembalasan\\b", "\\bkubakar rumahmu\\b", "\\bkuhajar\\b",
+    "\\bku hajar\\b",
+]
+
+[doxx]
+# Threats to expose or spread private/identifying information.
+patterns = [
+    "\\balamat rumah\\b", "\\bnomor hp\\b", "\\bnomor telepon\\b", "\\bnomor wa\\b",
+    "\\bkusebar\\b", "\\bsebarin alamat\\b", "\\bsebar data\\b",
+    "\\bsebar nomor\\b", "\\bkirim ke alamat\\b", "\\bku bocorkan\\b",
+    "\\bbocorkan alamat\\b", "\\bkuretas\\b", "\\bhack akun\\b",
+    "\\bsebar fotonya\\b", "\\bsebar identitas\\b", "\\bkuupload alamat\\b",
+    "\\bcari alamat rumahnya\\b",
+]
+
+[death_wish]
+# Wishing death on someone - distinct from encouraging THEM to act (selfharm_encouragement).
+patterns = [
+    "\\bmending mati\\b", "\\bmati aja\\b", "\\bmati sajalah\\b",
+    "\\bmampus aja\\b", "\\bmampus lu\\b", "\\bmampus kau\\b", "\\bmati saja\\b",
+    "\\bcepat mati\\b", "\\bsemoga mati\\b", "\\bmoga mati\\b", "\\bmati kau\\b",
+    "\\bmati lu\\b", "\\bmodar aja\\b", "\\bmampus sana\\b",
+    "\\bmending modar\\b", "\\bsemoga cepat mati\\b", "\\bkiamat aja lu\\b",
+]
+
+[selfharm_encouragement]
+# Directly encouraging the target to self-harm or end their life.
+patterns = [
+    "\\bbunuh diri aja\\b", "\\bbunuh diri sana\\b", "\\bgantung diri aja\\b",
+    "\\bgantung diri sana\\b", "\\bpotong urat\\b", "\\bakhiri hidupmu\\b",
+    "\\bsudahi hidupmu\\b", "\\bloncat aja dari\\b", "\\bminum baygon\\b",
+    "\\btelan silet\\b", "\\bsuicide aja\\b",
+]

@@ -1,0 +1,44 @@
+{
+  "a1": {
+    "backend": "transformers",
+    "base_model": "indolem/indobertweet-base-uncased",
+    "checkpoint_sha256": "c32bf944a89f741e",
+    "model_id": "models/a1_indobertweet_ibrohim_budi",
+    "quantization": null,
+    "revision": null,
+    "threshold": 0.5,
+    "train_set": "ibrohim_budi_multilabel"
+  },
+  "a2": {
+    "backend": "rules",
+    "families": {
+      "death_wish": 17,
+      "doxx": 17,
+      "insult": 155,
+      "selfharm_encouragement": 11,
+      "sexual": 24,
+      "slur": 12,
+      "threat": 23
+    },
+    "lexicons": [
+      "kamus_alay",
+      "abusive_id"
+    ],
+    "resource_sha256": {
+      "abusive_id.csv": "18c9ef8ea48400df",
+      "rule_families.toml": "7d98bd18e9f58749"
+    },
+    "rules_sha256": "29957d49c8c3860d"
+  },
+  "a3": {
+    "backend": "llamacpp",
+    "max_new_tokens": 24,
+    "model_id": "models/gguf/gemma2-9b-cpt-sahabatai-v1-instruct.Q4_K_M.gguf",
+    "model_sha256": "1a7cea899376bbe1",
+    "n_ctx": 4096,
+    "n_gpu_layers": -1,
+    "prompt_sha256": "a0cabea82754389e",
+    "quantization": "Q4_K_M",
+    "revision": null
+  }
+}

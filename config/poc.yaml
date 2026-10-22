@@ -1,0 +1,131 @@
+# Copy to config/local.yaml and fill in. local.yaml and data/private/ are gitignored.
+
+privacy:
+  # Use a long random value and never publish it. Raw commenter ids are hashed at ingest.
+  author_hash_salt: "PUT_YOUR_RANDOM_PRIVATE_SALT_HERE"
+
+youtube:
+  api_key: "PUT_YOUR_KEY_HERE"
+  max_comments_total: 25000
+  max_videos_per_channel: 15
+
+instagram:
+  # Instaloader requires a logged-in account to read comments. Prefer environment
+  # variables INSTAGRAM_USERNAME and INSTAGRAM_PASSWORD over storing a password here.
+  login_username: "PUT_YOUR_LOGIN_USERNAME_HERE"
+  password: ""                          # optional; INSTAGRAM_PASSWORD is preferred
+  session_file: "data/private/instagram-session"
+  save_session: true                    # password is only needed when creating the session
+  max_posts_per_account: 15
+  include_replies: true
+  # Optional account -> list of shortcodes or full Instagram post/reel URLs.
+  posts_by_account: {}
+  max_comments_total: 25000
+
+x:
+  bearer_token: "PUT_YOUR_BEARER_TOKEN_HERE"
+  max_conversations_per_account: 15
+  max_comments_total: 25000
+
+tiktok:
+  # Prefer TIKTOK_MS_TOKEN (the msToken cookie from a browser session) over this field.
+  ms_token: ""
+  browser: chromium
+  headless: true
+  num_sessions: 1
+  sleep_after: 3
+  max_videos_per_account: 15
+  max_comments_total: 25000
+  include_replies: true
+  # Optional reliability escape hatch: bypass account video discovery with known IDs/URLs.
+  video_ids_by_account: {}
+
+# R9: split is assigned per figure across every platform, never per account.
+figures:
+  - id: figure_a
+    genre: entertainment
+    split: dev
+    sources:
+      - {platform: youtube,   account: "UC_XXXXXXXX", mode: api}
+      - {platform: instagram, account: "public_target_username", mode: api}
+      - {platform: x,         account: "public_target_username", mode: import}
+      # Add TikTok to a real collection after running `playwright install chromium`:
+      # - {platform: tiktok, account: "public_target_username", mode: api}
+  - id: figure_b
+    genre: gossip
+    split: dev
+    sources:
+      - {platform: youtube,   account: "UC_XXXXXXXX", mode: api}
+      - {platform: instagram, account: "public_target_username", mode: api}
+  - id: figure_c
+    genre: creator_vlog
+    split: dev
+    sources:
+      - {platform: youtube, account: "UC_XXXXXXXX", mode: api}
+      - {platform: x,       account: "public_target_username", mode: import}
+  - id: figure_d
+    genre: news
+    split: dev
+    sources:
+      - {platform: youtube,   account: "UC_XXXXXXXX", mode: api}
+      - {platform: instagram, account: "public_target_username", mode: api}
+      - {platform: x,         account: "public_target_username", mode: import}
+  - id: figure_e
+    genre: entertainment
+    split: heldout
+    sources:
+      - {platform: youtube,   account: "UC_XXXXXXXX", mode: api}
+      - {platform: instagram, account: "public_target_username", mode: api}
+      - {platform: x,         account: "public_target_username", mode: import}
+
+labels:
+  schema: [harassment_personal, sexual_harm, threat_privacy, legitimate_criticism, benign_other]
+  harmful: [harassment_personal, sexual_harm, threat_privacy]
+
+consensus:
+  weights: {high: 1.0, medium: 0.5, ambiguous: 0.0}
+  train_on: [high, medium]              # R2: ambiguous excluded from training, kept on disk
+
+annotators:
+  a1_indobertweet:
+    base_model: "indolem/indobertweet-base-uncased"
+    train_set: "ibrohim_budi_multilabel"
+    # TRAP 1: this dataset has NO class for non-hateful negative content.
+    # A1 structurally cannot vote legitimate_criticism. See AGENTS.md §3.
+    can_vote_criticism: false
+  a2_rules:
+    lexicons: [kamus_alay, abusive_id]
+    can_vote_criticism: false
+  a3_llm:
+    model: "PUT_LOCAL_MODEL_PATH"       # 8-9B, 4-bit AWQ, ~4.2 GB. Not 27B.
+    quantization: "awq-4bit"
+    max_new_tokens: 24
+    batch_size: 32
+    can_vote_criticism: true            # the ONLY one. See TRAP 1.
+
+phrases:
+  ngram_range: [1, 4]
+  min_matches: 25                       # enforced inside recommend(), not just here
+  # R1: the harm rate is an interval of SHARP bounds - no smoothing. A Beta prior
+  # would shrink the interval and it would stop being an identified set.
+  # Small-sample noise is handled by min_matches below, not by a prior.
+  decide_on: lower                      # lower | resolved -- never change without reading R1
+  recommend_threshold: 0.85             # applied to p_harmful_lower()
+  max_criticism_share: 0.10             # over ALL matches, not resolved only
+  # No max_ambiguity_share: it would be unreachable. Passing the 0.85 lower bound
+  # already forces ambiguity_share < 0.15. Ambiguity is displayed, not gated.
+
+baseline:
+  # R6: required, parallel arm. This is the RQ1 answer and demo scene 6.
+  static_dictionary: "data/raw/static_profanity_id.txt"
+  # Three arms, so the improvement decomposes into normalization vs learning:
+  arms:
+    - {id: baseline_0, text: original,   filters: static}   # naive blocked-word list
+    - {id: baseline_1, text: normalized, filters: static}   # same normalizer, static list
+    - {id: ours,       text: normalized, filters: learned}  # normalizer + learned filters
+  # baseline_1 - baseline_0 = what normalization alone buys
+  # ours       - baseline_1 = what learning buys
+
+report:
+  redact_usernames: true                # R7: never emit raw author handles to a display artefact
+  screen_check: {top_phrases: 15, samples_per_phrase: 20}

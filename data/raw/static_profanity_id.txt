@@ -1,0 +1,36 @@
+# Naive creator's blocked-word list (R6 baseline arm).
+#
+# This is what a creator has TODAY: a flat list of plain Indonesian words, matched with
+# no normalizer at all. Demo scene 2: this list blocks "jelek" - an ordinary negative
+# opinion word ("videonya jelek") - while the learned system correctly rejects it as a
+# recommendation because most of its matches are legitimate_criticism, not harassment.
+#
+# Demo scene 6 needs this list to contain plain "goblok" but NONE of its spelling
+# variants (no "g0blok", "goblokkk", "gblok", "g*blok", ...). That gap is deliberate:
+# baseline_0 (this list on text_original) misses every obfuscated variant, baseline_1
+# (this list on text_normalized) catches them because the normalizer folds them onto
+# "goblok" before matching - so baseline_1 minus baseline_0 isolates the normalizer
+# effect alone, with zero contribution from learned filters.
+jelek
+buruk
+goblok
+tolol
+bodoh
+bego
+anjing
+babi
+monyet
+bangsat
+brengsek
+kontol
+memek
+tai
+sialan
+idiot
+kampret
+bangke
+keparat
+dungu
+bajingan
+norak
+gila

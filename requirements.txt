@@ -1,0 +1,30 @@
+# core
+pandas>=2.2
+pyarrow>=16.0
+numpy>=1.26
+pyyaml>=6.0
+scikit-learn>=1.5
+
+# ingest
+google-api-python-client>=2.130
+instaloader>=4.15.3
+TikTokApi>=7.3.3
+requests>=2.32
+
+# models
+torch>=2.3
+transformers>=4.44
+accelerate>=0.33
+sentencepiece>=0.2
+
+# local LLM annotator (pick one)
+# vllm>=0.6            # fastest batched inference, Linux/WSL
+# llama-cpp-python     # simplest on Windows
+
+# text
+regex>=2024.5
+rapidfuzz>=3.9
+emoji>=2.12           # A1's tweet_preprocess() - IndoBERTweet's documented input format
+
+# dev
+pytest>=8.2
